@@ -1,0 +1,29 @@
+install.packages("devtools")
+devtools::install_github("jhudsl/collegeIncome")
+library(collegeIncome)
+data(college)
+
+devtools::install_github("jhudsl/matahari")
+library(matahari)
+
+dance_start(value = FALSE, contents = FALSE)
+
+fit<-lm(median~major_category,data=college)
+sort(fit$coefficients)
+summary(fit)
+
+fit<-lm(median~major_category-1,data=college,weights = sample_size)
+summary(fit)
+data<-data.frame(names(fit$coefficients),unname(fit$coefficients))
+
+fit25<-lm(p25th~major_category-1,data=college,weights = sample_size)
+summary(fit25)
+data<-cbind(data,data.frame(names(fit25$coefficients),unname(fit25$coefficients)))
+
+fit75<-lm(p75th~major_category-1,data=college,weights = sample_size)
+summary(fit75)
+data<-cbind(data,data.frame(names(fit75$coefficients),unname(fit75$coefficients)))
+data<-data[,c(1,2,4,6)]
+colnames(data)<-c("major_category","median","p25th","p75th")
+
+dance_save("~/Desktop/college_major_analysis.rds")
